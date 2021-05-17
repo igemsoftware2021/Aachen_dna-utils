@@ -29,22 +29,17 @@ tryte_map = {('A', 'C'): '0',
 
 def byte_to_tryte(byte, tryte_length):
     tryte = ''
-    print(byte)
-
     for j in range(0, tryte_length):
         byte, trit = divmod(byte, 3)
         tryte = str(trit) + tryte
-
     return tryte
 
 
 def tryte_to_byte(tryte, byte_length):
     byte = 0
-
     for j in range(1, len(tryte)+1):
         trit = int(tryte[-j])
         byte += trit * pow(3, j-1)
-
     return Bits(uint=byte, length=byte_length)
 
 
@@ -81,26 +76,21 @@ if __name__ == '__main__':
 
     file = open(f"original_files/{file_name}")
 
-    bitstring = Bits(file)
-
+    bitstring = Bits(file).tobytes()
+    bitstring = [bitstring[i:i+1] for i in range(len(bitstring))]
     tryte_string = ''
 
-    for i in range(0, len(bitstring)-1, byte_length):
-        slice = bitstring[i:i + byte_length].int
-
-        tryte = byte_to_tryte(slice, tryte_length)
+    for i in bitstring:
+        tryte = byte_to_tryte(int.from_bytes(i,"little"), tryte_length)
         tryte_string += tryte
 
     DNA_string = tryte_to_dna(tryte_string)
-
     decoded_trit_string = dna_to_tryte(DNA_string)
 
     decoded_bitstring = ''
     for i in range(0, len(decoded_trit_string)-1, tryte_length):
         slice = decoded_trit_string[i: i + tryte_length]
-
         byte = tryte_to_byte(slice, byte_length)
-
         decoded_bitstring += byte.bin
 
     write_file = open(f"generated_files/{file_name}", 'wb')
