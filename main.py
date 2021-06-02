@@ -28,8 +28,8 @@ tryte_map = {('A', 'C'): '0',
 
 
 def byte_to_tryte(byte, tryte_length):
-    tryte = ''
     print(byte)
+    tryte = ''
 
     for j in range(0, tryte_length):
         byte, trit = divmod(byte, 3)
@@ -73,11 +73,10 @@ def next_tryte(first_base: str, second_base: str):
     return tryte_map[(first_base, second_base)]
 
 
-if __name__ == '__main__':
-
+def byte_to_DNA_to_byte():
     byte_length = 8
     tryte_length = 6
-    file_name = "DNA_raw.svg"
+    file_name = "project_reveal_3.mp4"
 
     file = open(f"original_files/{file_name}")
 
@@ -85,8 +84,8 @@ if __name__ == '__main__':
 
     tryte_string = ''
 
-    for i in range(0, len(bitstring)-1, byte_length):
-        slice = bitstring[i:i + byte_length].int
+    for i in range(0, len(bitstring) - 1, byte_length):
+        slice = bitstring[i:i + byte_length].uint
 
         tryte = byte_to_tryte(slice, tryte_length)
         tryte_string += tryte
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     decoded_trit_string = dna_to_tryte(DNA_string)
 
     decoded_bitstring = ''
-    for i in range(0, len(decoded_trit_string)-1, tryte_length):
+    for i in range(0, len(decoded_trit_string) - 1, tryte_length):
         slice = decoded_trit_string[i: i + tryte_length]
 
         byte = tryte_to_byte(slice, byte_length)
@@ -105,3 +104,12 @@ if __name__ == '__main__':
 
     write_file = open(f"generated_files/{file_name}", 'wb')
     Bits(f'0b{decoded_bitstring}').tofile(write_file)
+
+
+if __name__ == '__main__':
+    byte_to_DNA_to_byte()
+
+    # for i in range(2048):
+    #     byte = BitArray(uint=i, length=11)
+    #     tryte = byte_to_tryte(byte.uint, tryte_length=7)
+    #     print(tryte)
