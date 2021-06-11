@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/DNA_Coder.iml" filepath="$PROJECT_DIR$/.idea/DNA_Coder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../dna_utils/.idea/dna_utils.iml" filepath="$PROJECT_DIR$/../dna_utils/.idea/dna_utils.iml" />
     </modules>
   </component>
 </project>
