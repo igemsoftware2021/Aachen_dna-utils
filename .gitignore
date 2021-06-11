@@ -1,3 +1,8 @@
+# Custom
+generated_files/
+original_files/
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
