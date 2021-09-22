@@ -1,4 +1,5 @@
 from bitstring import *
+from pathlib import Path
 
 class DNACoder:
     def __init__(self, byte_length: int, tryte_length: int):
@@ -7,23 +8,23 @@ class DNACoder:
         self.bitstring = None
         self.dna_string = None
 
-    def read_file(self, filename: str):
-        file = open(f"original_files/{filename}")
+    def read_file(self, filepath: Path):
+        file = open(filepath)
         self.bitstring = Bits(file)
         file.close()
 
-    def write_file(self, filename: str):
-        write_file = open(f"generated_files/{filename}", 'wb')
+    def write_file(self, filepath: Path):
+        write_file = open(filepath, 'wb')
         Bits(f'0b{self.bitstring}').tofile(write_file)
         write_file.close()
 
-    def read_dna_file(self, filename: str):
-        file = open(f"original_files/{filename}")
+    def read_dna_file(self, filepath: Path):
+        file = open(filepath)
         self.dna_string = file.read()
         file.close()
 
-    def write_dna_file(self, filename: str):
-        write_file = open(f"generated_files/{filename}", "w")
+    def write_dna_file(self, filepath: Path):
+        write_file = open(filepath, "w")
         write_file.write(self.dna_string)
         write_file.close()
 
