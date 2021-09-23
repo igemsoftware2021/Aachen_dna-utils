@@ -1,5 +1,6 @@
 from bitstring import *
 from pathlib import Path
+from pyfaidx import Fasta, Sequence
 
 class DNACoder:
     def __init__(self, byte_length: int, tryte_length: int):
@@ -19,13 +20,22 @@ class DNACoder:
         write_file.close()
 
     def read_dna_file(self, filepath: Path):
-        file = open(filepath)
-        self.dna_string = file.read()
+        # file = open(filepath)
+        # self.dna_string = file.read()
+        # file.close()
+        file = Fasta(filepath.__str__())
+        self.dna_string = file[0].__str__()
         file.close()
 
     def write_dna_file(self, filepath: Path):
         write_file = open(filepath, "w")
-        write_file.write(self.dna_string)
+        title = ">dna sequence for encoding information, iGEM Aachen 2021"
+        write_file.write(title + "\n")
+
+        chunk_size = 80
+        dna_chunks = [self.dna_string[i:i+chunk_size] for i in range(0, len(self.dna_string), chunk_size)]
+        print(dna_chunks)
+        write_file.writelines(chunk + "\n" for chunk in dna_chunks)
         write_file.close()
 
     def encode(self):

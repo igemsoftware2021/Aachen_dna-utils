@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 bitstring = "*"
 docopt = "*"
+pyfasta = "*"
+pyfaidx = "*"
 
 [dev-packages]
 
