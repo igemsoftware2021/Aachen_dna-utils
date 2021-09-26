@@ -8,6 +8,7 @@ bitstring = "*"
 docopt = "*"
 pyfasta = "*"
 pyfaidx = "*"
+pyfastx = "*"
 
 [dev-packages]
 

@@ -2,6 +2,7 @@
 usage:
     dna_utils.py encode --input <input> --output <output>
     dna_utils.py decode --input <input> --output <output>
+    dna_utils.py correct --input <input> --output <output>
 
 """
 
@@ -27,6 +28,12 @@ def decode(args):
     secondCoder.decode()
     secondCoder.write_file(output)
 
+def correct(args):
+    input = Path(args["<input>"])
+    output = Path(args["<output>"])
+
+
+
 if __name__ == '__main__':
     args = docopt(__doc__, version='0.0.1')
 
@@ -34,3 +41,5 @@ if __name__ == '__main__':
         encode(args)
     if args['decode']:
         decode(args)
+    if args['correct']:
+        correct(args)
