@@ -9,6 +9,8 @@ docopt = "*"
 pyfasta = "*"
 pyfaidx = "*"
 pyfastx = "*"
+regex = "*"
+python-levenshtein = "*"
 
 [dev-packages]
 

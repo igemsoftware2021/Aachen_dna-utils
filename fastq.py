@@ -8,10 +8,20 @@ class Read():
         self.qual = qual
 
 class FastQ():
-    def __init__(self, fastq: Fastq):
+    def __init__(self, path: Path):
+        file = open(path)
+        length = len(file.readlines())
+        file.close()
+        file = open(path)
         self.reads = []
-        for read in fastq:
-            self.reads.append(Read(read.description, read.seq, read.qual))
+        for i in range(0, length, 4):
+            description = file.readline()
+            sequence = file.readline()
+            _ = file.readline()
+            quality = file.readline()
+            read = Read(description, sequence, quality)
+            self.reads.append(read)
+        file.close()
 
     def __iter__(self):
         return iter(self.reads)
