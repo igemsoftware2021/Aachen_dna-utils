@@ -103,7 +103,7 @@ class DNACoder:
 
         return tryte
 
-    def tryte_to_byte(slef, tryte, byte_length):
+    def tryte_to_byte(self, tryte, byte_length):
         byte = 0
 
         for j in range(1, len(tryte)+1):
