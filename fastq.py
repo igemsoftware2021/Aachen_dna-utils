@@ -16,8 +16,9 @@ class FastQ():
             sequence = file.readline()
             _ = file.readline()
             quality = file.readline()
-            self.read = Read(description, sequence, quality)
-            self.homo_reads.append(Homonucleotides(self.read))
+            read = Read(description, sequence, quality)
+            self.reads.append(read)
+            self.homo_reads.append(Homonucleotides(read))
         file.close()
 
     def __iter__(self):
