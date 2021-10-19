@@ -1,6 +1,6 @@
 # DNA_Coder
 
-A tool to encode Data in DNA.
+A tool to encode Data in DNA. From the 2021 iGEM Team Aachen.
 
 It encodes bytes into 6-trit trytes. then it encodes this sequence of trytes in to a string of bases in the following way:
 
