@@ -4,7 +4,7 @@ class Homonucleotide():
     def __init__(self, read: Read):
         self.nucleotide = read.seq[0]
         self.length = len(read.seq)
-        self.quality = 0
+        self.quality = sum(read.qual)/self.length
 
     def __str__(self):
         return "Nucleotide: " + self.nucleotide + ", Length: " + str(self.length) + ", Quality: " + str(self.quality)
@@ -22,10 +22,13 @@ class Homonucleotides():
                     self.homonucleotides.append(Homonucleotide(Read(
                         description=read.description,
                         seq=read.seq[i-length:i],
-                        qual=read.qual[i-length:i]
+                        qual=(ord(x) for x in read.qual[i-length:i])
                     )))
                 length = 1
                 prev = base
 
     def __iter__(self):
         return iter(self.homonucleotides)
+
+    def __len__(self):
+        return len(self.homonucleotides)

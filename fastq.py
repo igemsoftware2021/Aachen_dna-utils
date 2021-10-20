@@ -1,4 +1,3 @@
-from pyfastx import Fastq
 from pathlib import Path
 from read import Read
 from homonucleotide import Homonucleotide, Homonucleotides
@@ -16,8 +15,9 @@ class FastQ():
             sequence = file.readline()
             _ = file.readline()
             quality = file.readline()
-            self.read = Read(description, sequence, quality)
-            self.homo_reads.append(Homonucleotides(self.read))
+            read = Read(description, sequence, quality)
+            self.reads.append(read)
+            self.homo_reads.append(Homonucleotides(read))
         file.close()
 
     def __iter__(self):
@@ -29,8 +29,12 @@ class FastQ():
     def write(self, path: Path):
         file = open(path, 'w')
         for read in self.reads:
-            file.write(read.description + "\n")
-            file.write(read.seq + "\n")
+            file.write(read.description)
+            file.write(read.seq)
             file.write("+\n")
-            file.write(read.qual + "\n")
+            file.write(read.qual)
 
+    def recreate_homonucleotides(self):
+        self.homo_reads = []
+        for read in self.reads:
+            self.homo_reads.append(Homonucleotides(read))
