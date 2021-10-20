@@ -78,12 +78,11 @@ class ErrorCorrector:
                     new_reads.append(read)
 
         self.fastq.reads = new_reads
+        self.recreate_homo_reads()
 
     def merge_reads(self, support: int):
         lengths = np.fromiter((len(x) for x in self.fastq.homo_reads), dtype=int)
-        common_length = np.percentile(lengths, support)
-
-        print("sequences left: " + str(len(self.fastq.reads)))
+        common_length = np.percentile(lengths, 100 - support)
 
         last = ""
         sequence = ""
@@ -143,3 +142,6 @@ class ErrorCorrector:
         else:
             normed_vote.pop(max_base)
             return max(normed_vote, key=normed_vote.get)
+
+    def recreate_homo_reads(self):
+        self.fastq.recreate_homonucleotides()

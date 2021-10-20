@@ -70,6 +70,7 @@ def correct(args):
     )
 
     print("Reverse primer removed, " + str(len(corrector.fastq.reads)) + " reads left.")
+
     print("Merge sequences now.")
 
     merged_sequence = corrector.merge_reads(support)

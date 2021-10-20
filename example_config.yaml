@@ -1,7 +1,7 @@
 primer:
   sequence: ACAATTCATCTTAGTGCCAGACTACTGTACTGTCCCAGAGAATAGACTTGCTTCGTGCGCACCCGTATGCCGCTCGATATGCGTAGCCGTCCATGTTGAT
-  max_distance: 5
+  max_distance: 7
 reverse_primer:
   sequence: TACCA
   max_distance: 2
-support: 30
+support: 70
