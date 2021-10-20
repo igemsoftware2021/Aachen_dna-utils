@@ -3,10 +3,10 @@ from pathlib import Path
 from pyfaidx import Fasta, Sequence
 
 class DNACoder:
-    def __init__(self, byte_length: int, tryte_length: int):
+    def __init__(self, byte_length: int, tryte_length: int, bitstring: Bits = None):
         self.byte_length = byte_length
         self.tryte_length = tryte_length
-        self.bitstring = None
+        self.bitstring = bitstring
         self.dna_string = None
 
     def read_file(self, filepath: Path):

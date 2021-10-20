@@ -83,6 +83,8 @@ class ErrorCorrector:
         lengths = np.fromiter((len(x) for x in self.fastq.homo_reads), dtype=int)
         common_length = np.percentile(lengths, support)
 
+        print("sequences left: " + str(len(self.fastq.reads)))
+
         last = ""
         sequence = ""
 
