@@ -1,9 +1,9 @@
-from pyfaidx import Fasta
-from pyfastx import Fastq, Sequence
 from pathlib import Path
 from fastq import FastQ
 from itertools import combinations
 import Levenshtein
+import statistics
+import numpy as np
 
 class ErrorCorrector:
     def __init__(self, filepath: Path):
@@ -13,6 +13,7 @@ class ErrorCorrector:
         self.fastq.write(path)
 
     def remove_homonucleotides(self):
+        print(len(self.fastq.reads))
         for i, read in enumerate(self.fastq):
             new_seq = ""
             prev = ""
@@ -22,36 +23,121 @@ class ErrorCorrector:
                     new_seq += base
             self.fastq[i].seq = new_seq
 
-    def remove_subsequence(self, primer: str, distance: int, remove_other: bool):
-        max_length = len(primer)+2*distance
-        min_length = len(primer)-2*distance
-        for read in self.fastq:
-            sequence = read.seq
-            subsequences = [sequence[x:y] for x, y in combinations(range(len(sequence) + 1), r=2)
-                            if len(sequence[x:y]) == max_length]
+    def remove_subsequence(self, primer: str, distance: int, remove_other: bool, remove_before: bool,
+                           remove_after: bool):
 
-            min_dist = max_length
-            position = -1
-            for i, subsequence in enumerate(subsequences):
-                dist = Levenshtein.distance(subsequence, primer)
-                if dist < min_dist:
-                    min_dist = dist
-                    position = i
-                    if min_dist == 0:
+        iter_new = 0
+        new_reads = []
+        max_length = len(primer) + distance
+        min_length = len(primer) - distance
+        for read_iter, read in enumerate(self.fastq):
+            sequence = read.seq
+            # subsequences = [sequence[x:y] for x, y in combinations(range(len(sequence) + 1), r=2)
+            #                 if len(sequence[x:y]) == max_length]
+
+            subsequences = [sequence[x:y] for x, y in combinations(range(len(sequence) + 1), r=2)
+                            if min_length <= len(sequence[x:y]) <= max_length]
+
+            min_found_dist = max_length
+            subsequence_position = -1
+            for subsequence_iter, subsequence in enumerate(subsequences):
+                found_dist = Levenshtein.distance(subsequence, primer)
+                if found_dist < min_found_dist:
+                    subsequence_position = subsequence_iter
+                    min_found_dist = found_dist
+                    if min_found_dist == 0:
                         break
 
-            if min_dist <= 3*distance:
-                sequence = subsequences[position]
-                subsequences = [sequence[x:y] for x, y in combinations(range(len(sequence) + 1), r=2)
-                                if len(sequence[x:y]) >= min_length]
+            if subsequence_position >= 0 and min_found_dist <= distance:
+                # Subsequence found, remove it
+                iter_new += 1
+                new_seq = ""
+                print(subsequences[subsequence_position])
+                subsequence_start = sequence.find(subsequences[subsequence_position])
+                subsequence_length = len(subsequences[subsequence_position])
+                if remove_before:
+                    first_base_behind = subsequence_start + subsequence_length
+                    new_seq = self.fastq.reads[read_iter].seq[first_base_behind:]
+                elif remove_after:
+                    new_seq = self.fastq.reads[read_iter].seq[:subsequence_start] + "\n"
+                else:
+                    first_base_behind = subsequence_start + subsequence_length
+                    new_seq = self.fastq.reads[read_iter].seq[:subsequence_start] \
+                                                      + self.fastq.reads[read_iter].seq[first_base_behind:]
 
-                for i, subsequence in enumerate(subsequences):
-                    dist = Levenshtein.distance(subsequence, primer)
-                    if dist <= min_dist and dist <= distance:
-                        min_dist = dist
-                        position = i
-                        if min_dist == 0:
-                            break
+                new_read = read
+                new_read.seq = new_seq
+                new_reads.append(new_read)
 
-                if position >= 0:
-                    print(subsequences[position])
+            else:
+                # Subsequence not found, remove whole sequence
+                if remove_other:
+                    pass
+                    # self.fastq.reads.remove(read)
+                else:
+                    new_reads.append(read)
+
+        self.fastq.reads = new_reads
+
+    def merge_reads(self, support: int):
+        lengths = np.fromiter((len(x) for x in self.fastq.homo_reads), dtype=int)
+        common_length = np.percentile(lengths, support)
+
+        last = ""
+        sequence = ""
+
+        for iter in range(int(common_length)):
+            last = self.get_next_base(iter, last)
+            sequence += last
+
+        return sequence
+
+    def get_next_base(self, number: int, last: str):
+        quality_votes = {
+            "A": 0,
+            "C": 0,
+            "G": 0,
+            "T": 0
+        }
+        length_votes = {
+            "A": 0,
+            "C": 0,
+            "G": 0,
+            "T": 0
+        }
+        for read in self.fastq.homo_reads:
+            if len(read.homonucleotides) > number:
+                next = read.homonucleotides[number]
+                if next.nucleotide == "A":
+                    quality_votes["A"] += next.quality
+                    length_votes["A"] += next.length
+                elif next.nucleotide == "C":
+                    quality_votes["C"] += next.quality
+                    length_votes["C"] += next.length
+                elif next.nucleotide == "G":
+                    quality_votes["G"] += next.quality
+                    length_votes["G"] += next.length
+                elif next.nucleotide == "T":
+                    quality_votes["T"] += next.quality
+                    length_votes["T"] += next.length
+
+
+        max_length = length_votes.get(max(length_votes, key=length_votes.get))
+        normed_length = {key: length_votes[key]/max_length for key in length_votes}
+
+        max_quality = quality_votes.get(max(quality_votes, key=quality_votes.get))
+        normed_quality = {key: quality_votes[key]/max_quality for key in quality_votes}
+
+        normed_vote = {
+            "A": (normed_quality.get("A") + normed_length.get("A")) / 2,
+            "C": (normed_quality.get("C") + normed_length.get("C")) / 2,
+            "G": (normed_quality.get("G") + normed_length.get("G")) / 2,
+            "T": (normed_quality.get("T") + normed_length.get("T")) / 2
+        }
+
+        max_base = max(normed_vote, key=normed_vote.get)
+        if max_base != last:
+            return max_base
+        else:
+            normed_vote.pop(max_base)
+            return max(normed_vote, key=normed_vote.get)
