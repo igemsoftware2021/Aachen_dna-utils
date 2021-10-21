@@ -15,6 +15,7 @@ From A/T, G/C there is one group change so its a 1.
 From A/C, G/T there are two changes so its a 2.
 
 
+
 ```
 A --0-- G
 | \   / |
