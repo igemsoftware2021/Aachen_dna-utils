@@ -1,4 +1,6 @@
+![dna_four_colors](https://user-images.githubusercontent.com/44715237/138370519-df86295f-6074-44ae-a577-572d7c8b625b.png)
 # DNA Utils
+
 
 A tool to encode Data in DNA.
 From the 2021 iGEM Team Aachen.
