@@ -1,4 +1,4 @@
-# DNA_Coder
+# DNA Utils
 
 A tool to encode Data in DNA.
 From the 2021 iGEM Team Aachen.
@@ -28,16 +28,32 @@ T --0-- C
 Clone this repository and install pipenv first. Then:
 ```
 pipenv install
+pipenv shell
 ```
 
 # Usage
 
+This tool knows three commands: `encode`, `correct`, and `decode`.
+They are described in more detail below.
+If you want to learn more about how the DNA Utils work, visit the [iGEM Aachen 2021 wiki](2021.igem.org/Team:Aachen/Software).
+In the folder `assets`, example files are provided that you can use to test the different commands.
+
 ## To Encode a File
 
-`dna_utils.py encode --input <input> --output <output>`
+`python dna_utils.py encode --input <input> --output <output>`
+
+This command takes an arbitrary file as input and generates a file in the `fasta` format as output.
+The details about the encoding are described above.
+
+### Example
+
+This command takes a text file and encodes it into DNA.
+
+`python dna_utils.py encode --input assets/example.txt --output assets/example.fasta`
 
 ## To Correct a File
-`dna_utils.py correct --input <input> --output <output> --config <config>`
+
+`python dna_utils.py correct --input <input> --output <output> --config <config>`
 
 This command takes a `fastq` file as input and generates a `fasta` file with a single DNA sequence as output.
 It also takes a `yaml` file with additional parameters.
@@ -73,7 +89,22 @@ It determines how long the merged sequence should be.
 To do so, the tool first compares the lengths of all sequences.
 It then sets teh length to the minimum that `support`% of the sequences have.
 
-`python dna_utils.py correct --input original_files/BC23_small.fastq --output generated_files/BC23_corrected.fasta --config example_config.yaml`
+### Example
+
+This command takes an actual file generated with nanopore sequencing, removes its primers and merges the remaining sequences to recreate the original sequence.
+
+`python dna_utils.py correct --input assets/example_sequence.fastq --output assets/example_corrected.fasta --config assets/example_config.yaml`
 
 ## To Decode a File
-`dna_utils.py decode --input <input> --output <output>`
+
+`python dna_utils.py decode --input <input> --output <output>`
+
+This command is the counterpart to the `encode` command.
+It takes a `fasta` file as input and generates and arbitrary file.
+
+### Example
+
+To execute this, first execute the example command to encode a file.
+This command takes the output from the encode command and recreates the original textfile from it.
+
+`python dna_utils.py decode --input assets/example.fasta --output assets/example_decoded.txt`
